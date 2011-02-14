@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/tiny_dialer'
+require TinyDialer::MODEL_ROOT/:init
+require TinyDialer::LIBROOT/:tiny_dialer/:menu_listener
+
+if __FILE__ == $0
+  FSR.start_oes! TinyDialer::MenuListener, :port => 8085, :host => "127.0.0.1"
+end

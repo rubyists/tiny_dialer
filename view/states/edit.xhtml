@@ -1,0 +1,31 @@
+<h3>Editing #{@state.state}</h3>
+<form action="#{r(:update, @state.id)}" method="post">
+  <fieldset>
+    <legend>Edit States</legend>
+
+    <table>
+      <tr>
+        <td>
+          <label for="start">Start Time:</label>
+        </td>
+        <td>
+          <input type="text" name="start" value="#{@state.start}" id="start" maxlength="5" />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label for="stop">Stop Time:</label>
+        </td>
+        <td>
+          <input type="text" name="stop" value="#{@state.stop}" id="stop" maxlength="5" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="Submit" />
+        </td>
+        <td>
+      </tr>
+    </table>
+  </fieldset>
+</form>

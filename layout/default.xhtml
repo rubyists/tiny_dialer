@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>#@title</title>
+    <meta name="generator" content="Ramaze #{Ramaze::VERSION}" />
+
+    <link type="text/css" href="/css/smoothness/jquery-ui-1.8.8.custom.css" rel="stylesheet" />
+    <link type="text/css" href="/css/site.css" rel="stylesheet" />
+    <script type="text/javascript" src="/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="/js/jquery-ui-1.8.8.custom.min.js"></script>
+    <script type="text/javascript" src="/js/site.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>#@title</h1>
+      <nav>
+        <ul>
+          <li>
+            #{TinyDialer::AdminController.a 'Admin', :/}
+          </li>
+          <li>
+            #{TinyDialer::StatesController.a 'States', :/}
+          </li>
+          <li>
+            #{TinyDialer::RecordsController.a 'Records', :/}
+          </li>
+        </ul>
+      </nav>
+      <div class="flash-error">#{flash[:ERROR] if flash[:ERROR]}</div>
+      <div class="flash-warning">#{flash[:WARN] if flash[:WARN]}</div>
+      <div class="flash-info">#{flash[:INFO] if flash[:INFO]}</div>
+    </header>
+    <div id="content">
+      #@content
+    </div>
+    <footer>
+      Copyright (c) 2009-2011 The Rubyists, LLC<br />
+      Powered by
+      <a href="http://lighttpd.net">Lighttpd</a>
+      <a href="http://ramaze.net">Ramaze</a>
+      <a href="http://www.postgresql.org">PostgreSQL</a>
+    </footer>
+  </body>
+</html>

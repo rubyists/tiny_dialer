@@ -1,0 +1,32 @@
+<form action="#{r(:search)}" method="post">
+  <fieldset>
+    <legend>Search Records</legend>
+
+    <table>
+      <tr>
+        <td><label for="date_start">Start Date:</label></td>
+        <td>
+          <input type="text" name="date_start" class="datepicker" id="date_start">
+        </td>
+      </tr>
+
+      <tr>
+        <td><label for="date_end">End Date:</label></td>
+        <td>
+          <input type="text" name="date_end" class="datepicker" id="date_end">
+        </td>
+      </tr>
+
+      <tr>
+        <td><label for="phone">Phone Num</label></td>
+        <td><input type="text" name="phone" id="phone"></td>
+      </tr>
+
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="Search">
+        </td>
+      </tr>
+    </table>
+  </fieldset>
+</form>

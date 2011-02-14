@@ -1,0 +1,47 @@
+require_relative '../tiny_dialer'
+require 'fsr'
+
+module TinyDialer
+  class Dialer
+    attr_accessor :server, :auth
+    attr_reader :es, :hopper
+
+    def initialize(args = {})
+      FSR.load_all_commands
+      @server = args[:host] || '127.0.0.1' # Freeswitch server to connect to
+      @proxy_server = args[:proxy_server] || @server
+      @auth = args[:auth] || args[:pass] || 'ClueCon' # Freeswitch auth
+      @es = FSR::CommandSocket.new(:server => @server, :auth => @auth) # FSR Command Socket instance
+      @hopper = args[:hopper]
+    end
+
+    def dial(timer)
+      if lead = @hopper.next
+        timer.interval = 0.05 # TODO: Put pacing here
+        dial_next(lead)
+      else
+        timer.interval = [15, timer.interval * 1.5].min
+        Log.info "No more leads to load the hopper today, set interval to %.2f" % [timer.interval]
+      end
+    end
+
+    private
+
+    def dial_next(lead)
+      if lead.call?
+        lead.update(:status => 'DIALING', :timestamp => Time.now) # update lead status to dialing
+        lead.update(:status => 'DIALING', :timestamp => Time.now) # update lead status to dialing
+        queue = lead.queue
+        response = es.originate(:target => "{tcc_queue=#{queue}}[origination_caller_id_number=8887961510]sofia/external/1#{lead.phone_num}@#{@proxy_server}",
+                                #:endpoint => "callcenter sales",
+                                :endpoint => FSR::App::Transfer.new('direct_transfer XML default'),
+                                :target_options => {:lead_id => lead.id}).run
+        Log.info "Calling #{lead.debtor_id}: #{lead.first_name} #{lead.last_name} at #{lead.phone}."
+      else
+        Log.info "Not Calling #{lead.debtor_id}: #{lead.first_name} #{lead.last_name}."
+      end
+    end
+
+  end
+
+end

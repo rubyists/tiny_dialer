@@ -1,0 +1,24 @@
+<?r if @records_paginated.page_count > 1 ?>
+  #{@records_paginated.navigation}
+<?r end ?>
+
+<table>
+  <tr>
+    <th>Debtor</th>
+    <th>First</th>
+    <th>Last</th>
+    <th>Timestamp</th>
+    <th>Phone</th>
+    <th>Status</th>
+  </tr>
+  <?r @records_paginated.each do |record| ?>
+    <tr>
+      <td>#{record.debtor_id.to_s}</td>
+      <td>#{record.first_name.to_s}</td>
+      <td>#{record.last_name.to_s}</td>
+      <td>#{record.timestamp.strftime("%m/%d/%Y %H:%M")}</td>
+      <td>#{record.phone}</td>
+      <td>#{record.status}</td>
+    </tr>
+  <?r end ?>
+</table>

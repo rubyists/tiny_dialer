@@ -1,0 +1,13 @@
+<h3>State Call Times</h3>
+<form action="#{r(:edit)}" method="post">
+  <fieldset>
+    <legend>Choose State to edit</legend>
+
+    <select name="state_id">
+      <?r @states.each do |state| ?>
+        <option value=#{state.id}>#{state.state}</option>
+      <?r end ?>
+    </select>
+    <input type="submit" value="Edit State" />
+  </fieldset>
+</form>

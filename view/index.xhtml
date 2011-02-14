@@ -1,0 +1,32 @@
+<h3>Current Status</h3>
+
+<table class="status">
+  <tr>
+    <th>Dialer Status</th><th>Dialer Pool</th><th>IVR Listener</th>
+  </tr>
+  <tr>
+    <td>#@status</td>
+    <td id="status_dialer_pool">#@dialer_pool</td>
+    <td>#@ivr_status</td>
+  </tr>
+</table>
+
+<div class="dialer_control">
+  <h3>Dialer Controls</h3>
+
+  <form method="POST" action="#{r(:set_dialer_max)}" class="slider">
+    <input type="hidden" name="dialer_max" id="dialer_max" value="#{@dialer_pool}">
+    <label for="dialer_pool">Dialer Pool:</label>
+    <input type="text" name="dialer_pool" id="dialer_pool" size="2" />
+    <div id="dialer_pool_slider"></div>
+  </form>
+</div>
+
+<div class="cvs_upload">
+  <h3>Upload and load new CSV</h3>
+  <form method="POST" action="#{r(:upload_csv)}" enctype="multipart/form-data">
+    <label for="csv_file">Upload CSV:</label>
+    <input type="file" name="file" id="csv_file" />
+    <input type="submit" name="submit" value="Submit" />
+  </form>
+</div>
