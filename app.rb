@@ -2,6 +2,7 @@ require 'rubygems'
 require 'ramaze'
 
 Ramaze.setup do |g|
+  gem 'bacon', '1.1.0'
   gem 'eventmachine', '0.12.10'
   gem 'freeswitcher', '0.5.2', lib: 'fsr'
   gem 'log4r', '1.1.9'
