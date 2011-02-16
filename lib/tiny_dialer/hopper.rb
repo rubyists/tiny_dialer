@@ -10,7 +10,8 @@ module TinyDialer
       @hopper = []
       @loading = false
       @max_size = args[:max_size] || 100
-      @hopper_loader = false
+      @interval = 5
+      EM.add_timer(@interval, method(:load_hopper_tick))
     end
 
     def self.create(args = {})
@@ -19,7 +20,6 @@ module TinyDialer
 
     # Return next lead
     def next
-      load_hopper_start unless @hopper_loader
       hopper.unshift.pop
     end
 
@@ -37,25 +37,18 @@ module TinyDialer
 
     private
 
-    def load_hopper_start
-      @interval = 5
-      @hopper_loader = EM.add_periodic_timer(@interval, method(:load_hopper_tick))
-    end
-
     def load_hopper_tick
-      @hopper_loader.cancel
-
       EM.defer do
         begin
           load_hopper if hopper.empty?
         ensure
           if hopper.empty?
-            @interval = [60, @interval * 1.5].min
+            @interval = [10, @interval * 1.2].min
           else
             @interval = [5, @interval * 0.5].max
           end
 
-          @hopper_loader = EM.add_periodic_timer(@interval, method(:load_hopper_tick))
+          EM.add_timer(@interval, method(:load_hopper_tick))
         end
       end
     end

@@ -15,14 +15,10 @@ module TinyDialer
       @hopper = args[:hopper]
     end
 
-    def dial(timer)
-      if lead = @hopper.next
-        timer.interval = 0.05 # TODO: Put pacing here
-        dial_next(lead)
-      else
-        timer.interval = [15, timer.interval * 1.5].min
-        Log.info "No more leads to load the hopper today, set interval to %.2f" % [timer.interval]
-      end
+    def dial
+      return unless lead = @hopper.next
+      dial_next(lead)
+      true
     end
 
     private

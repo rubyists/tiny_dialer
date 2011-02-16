@@ -6,6 +6,7 @@ module TinyDialer
       @status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']}`.split(':')[0]
       @ivr_status = `sv stat #{ENV['HOME']}/service/ivr`.split(':')[0]
       @dialer_pool = TinyDialer.db[:dialer_pool].order(:id).last[:dialer_max]
+      @dialer_ratio = TinyDialer.db[:dialer_pool].order(:id).last[:ratio]
     end
 
     def upload_csv
@@ -24,6 +25,10 @@ module TinyDialer
 
     def set_dialer_max
       TinyDialer.db[:dialer_pool].update dialer_max: request[:max].to_i
+    end
+
+    def set_dialer_ratio
+      TinyDialer.db[:dialer_pool].update ratio: request[:ratio].to_f
     end
 
     def start_dialer

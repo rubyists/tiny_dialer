@@ -84,7 +84,7 @@ table {
   margin: 2em 0em;
 }
 
-.slider input[name=dialer_pool] {
+.slider input[name=dialer_pool], .slider input[name=dialer_ratio] {
   border: 0;
   font-weight: bold;
   color: #f00;
@@ -107,8 +107,4 @@ table {
 
 .csv_upload input {
   background: #f00;
-}
-
-#dialer_pool_slider {
-  width: 100%;
 }

@@ -15,10 +15,13 @@
   <h3>Dialer Controls</h3>
 
   <form method="POST" action="#{r(:set_dialer_max)}" class="slider">
-    <input type="hidden" name="dialer_max" id="dialer_max" value="#{@dialer_pool}">
     <label for="dialer_pool">Dialer Pool:</label>
-    <input type="text" name="dialer_pool" id="dialer_pool" size="2" />
+    <input type="text" name="dialer_pool" id="dialer_pool" size="2" value="#{h @dialer_pool}"/>
     <div id="dialer_pool_slider"></div>
+
+    <label for="dialer_ratio">Dialer Ratio:</label>
+    <input type="text" name="dialer_ratio" id="dialer_ratio" size="4" value="#{h @dialer_ratio}" />
+    <div id="dialer_ratio_slider"></div>
   </form>
 </div>
 

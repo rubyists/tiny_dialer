@@ -22,7 +22,7 @@ module TinyDialer
       FSR::Log.info "*** Answering incoming call from #{exten} for #{queue}"
 
       answer do
-        FSR::Log.info "*** Transferring #{exten} to #{queue}@#{@queue_server}"
+        FSR::Log.info "*** Transferring #{exten} to #{queue}@#{@queue_server}:5080"
         bridge "{tcc_queue=#{queue}}sofia/internal/#{queue}@#{@queue_server}:5080"
       end
     end
