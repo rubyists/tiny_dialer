@@ -2,11 +2,11 @@ module TinyDialer
   class AdminController < Controller
     map '/'
 
+    provide(:json, engine: :None, type: 'application/json'){|action, object|
+      object.to_json
+    }
+
     def index
-      @status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']}`.split(':')[0]
-      @ivr_status = `sv stat #{ENV['HOME']}/service/ivr`.split(':')[0]
-      @dialer_pool = TinyDialer.db[:dialer_pool].order(:id).last[:dialer_max]
-      @dialer_ratio = TinyDialer.db[:dialer_pool].order(:id).last[:ratio]
     end
 
     def upload_csv
@@ -23,12 +23,31 @@ module TinyDialer
       redirect_referrer
     end
 
-    def set_dialer_max
-      TinyDialer.db[:dialer_pool].update dialer_max: request[:max].to_i
-    end
-
     def set_dialer_ratio
       TinyDialer.db[:dialer_pool].update ratio: request[:ratio].to_f
+    end
+
+    def stats
+      settings = TinyDialer.db[:dialer_pool].order(:id).last
+      ratio = settings[:ratio]
+
+      sock = FSR::CommandSocket.new(:server => @host, :pass => @pass)
+      current_dials = sock.channels.run.select{|ch| ch.dest != "19999" }
+
+      ready_agents = TinyDialer::TCC_Helper.ready_agents.map(&:name)
+
+      max_dials = ENV['TD_Max_Dials'].to_i
+
+      aim = [max_dials, (ready_agents.size - current_dials.size) * ratio].min
+
+      return {
+        ratio: ratio,
+        aim: aim,
+        current_dials: current_dials,
+        dialer_status: dialer_status,
+        ivr_status: ivr_status,
+        ready_agents: ready_agents
+      }
     end
 
     def start_dialer
@@ -39,7 +58,7 @@ module TinyDialer
         redirect_referrer
       end
 
-      TinyDialer.db[:dialer_pool].update dialer_max: 1
+      TinyDialer.db[:dialer_pool].update dialer_max: 1, ratio: 1.0
 
       if sv_u("#{ENV['HOME']}/service/#{ENV['APP_DB']}")
         flash[:INFO] = "Starting Dialer with #{dialer_pool} workers"
@@ -84,6 +103,14 @@ module TinyDialer
 
     def sv_d(path)
       system('sv', 'd', path)
+    end
+
+    def dialer_status
+      dialer_status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']}`.split(':')[0]
+    end
+
+    def ivr_status
+      ivr_status = `sv stat #{ENV['HOME']}/service/ivr`.split(':')[0]
     end
   end
 end

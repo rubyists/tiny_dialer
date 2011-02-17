@@ -1,10 +1,10 @@
-require 'rubygems'
+require 'json'
 require 'ramaze'
 
 Ramaze.setup do |g|
   gem 'bacon', '1.1.0'
   gem 'eventmachine', '0.12.10'
-  gem 'freeswitcher', '0.5.2', lib: 'fsr'
+  gem 'freeswitcher', '0.5.8', lib: 'fsr'
   gem 'log4r', '1.1.9'
   gem 'name_parse', '0.0.5'
   gem 'pg', '0.10.1'
@@ -22,6 +22,7 @@ module TinyDialer
   require LIBROOT/:tiny_dialer/:dialer
   require LIBROOT/:tiny_dialer/:hopper
   require LIBROOT/:tiny_dialer/:phone_number
+  require LIBROOT/:tiny_dialer/:tcc_helper
 end
 
 require_relative 'controller/init'
@@ -31,6 +32,8 @@ Ramaze::Response.options.headers.merge!(
   "Content-Style-Type" => "text/css",
   "expires" => "0"
 )
+
+FSR.load_all_commands
 
 if $0 == __FILE__
   Ramaze.start port: 7070

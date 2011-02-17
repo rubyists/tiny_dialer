@@ -74,6 +74,11 @@ table {
   width: 100%;
 }
 
+#show_ready_agents .agent {
+  display: block;
+  text-align: left;
+}
+
 .dialer_control {
   width: 100%;
   border-bottom: 3px dashed #ddd;
@@ -81,14 +86,19 @@ table {
 }
 
 .slider {
-  margin: 2em 0em;
+  width: 50%;
+  margin: 2em auto;
 }
 
 .slider input[name=dialer_pool], .slider input[name=dialer_ratio] {
   border: 0;
   font-weight: bold;
   color: #f00;
-  margin: 1em;
+  margin: 0em auto;
+}
+
+#dialer_pool_control, #dialer_ratio_control {
+  margin: 2em auto;
 }
 
 .button {

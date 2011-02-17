@@ -11,10 +11,12 @@ module TinyDialer
       }
 
       all_agents.select { |agent|
-        agent.status =~ /Available/ &&
-          !reg_servers[agent.reg_server].detect { |ch| 
-            ch.dest == agent.ext || ch.name =~ /(?:^|\/)(?:sip:)?#{agent.ext}[@-]/
-        }
+        next unless agent.status =~ /Available/ # only select Available
+        channels = reg_servers[agent.reg_server]
+        channels.select{|channel|
+          next if channel.dest == '19999' # ignore calls with dest
+          channel.dest == agent.ext || channel.name =~ /(?:^|\/)(?:sip:)?#{agent.ext}[@-]/
+        }.empty?
       }
     end
 
@@ -25,4 +27,3 @@ module TinyDialer
     end
   end
 end
-

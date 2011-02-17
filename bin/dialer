@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require_relative '../options'
 require_relative '../lib/tiny_dialer'
 require TinyDialer::MODEL_ROOT/:init
 require TinyDialer::LIBROOT/:tiny_dialer/:hopper
@@ -7,88 +8,92 @@ require TinyDialer::LIBROOT/:tiny_dialer/:dialer
 require "eventmachine"
 require "fsr"
 require "fsr/command_socket"
+FSR.load_all_commands
+require "tiny_dialer/tcc_helper"
 
-class TinyDialer::DialManager
-  attr_reader :hopper, :host, :pass
-  def initialize(o = {:dialers => 1, :host => '127.0.0.1', :pass => 'ClueCon'})
-    @host         = o[:host] || '127.0.0.1'
-    @pass         = o[:pass] || 'ClueCon'
-    @proxy_server = o[:proxy_server] || '127.0.0.1'
+module TinyDialer
+  class DialManager
+    attr_reader :hopper, :host, :pass, :max_dials
 
-    TinyDialer::Log.info "DialManager initialized with #{max_dials} dialers"
+    def initialize(o = {:dialers => 1, :host => '127.0.0.1', :pass => 'ClueCon'})
+      @host         = o[:host] || '127.0.0.1'
+      @pass         = o[:pass] || 'ClueCon'
+      @proxy_server = o[:proxy_server] || '127.0.0.1'
+      @max_dials    = o[:max_dials] || 20
 
-    @hopper = TinyDialer::Hopper.create(:max_size => 100)
-    @dialer = TinyDialer::Dialer.new(
-      host: @host,
-      pass: @pass,
-      hopper: @hopper,
-      proxy_server: @proxy_server
-    )
+      TinyDialer::Log.info "DialManager initialized with #{max_dials} dialers"
 
-    @interval = 5
-    EM.add_timer(@interval, method(:timer_tick))
-  end
+      @hopper = TinyDialer::Hopper.create(:max_size => 100)
+      @dialer = TinyDialer::Dialer.new(
+        host: @host,
+        pass: @pass,
+        hopper: @hopper,
+        proxy_server: @proxy_server
+      )
 
-  def current_dials
-    sock = FSR::CommandSocket.new(:server => @host, :pass => @pass)
-    sock.channels.run.select{|ch| ch.dest != "19999" }
-  end
+      @interval = 5
+      EM.add_timer(@interval, method(:timer_tick))
+    end
 
-  def max_dials
-    TinyDialer.db[:dialer_pool].first[:dialer_max]
-  end
+    def current_dials
+      @dialer.es.channels.run.select{|ch| ch.dest != "19999" }.size
+    end
 
-  def dial_ratio
-    TinyDialer.db[:dialer_pool].first[:ratio]
-  end
+    def ready_agents
+      TCC_Helper.ready_agents.size
+    end
 
-  def need_dials
-    max_dials - current_dials.size
-  end
+    # how many dials should be made based on current calls and ready agents
+    # Never aim for more than max_dials
+    def dial_aim
+      row = TinyDialer.db[:dialer_pool].first
+      ratio = row[:ratio]
 
-  def timer_tick
-    EM.defer do
-      begin
-        if dial
-          @interval = 0.05
-        else
-          @interval = [10, @interval * 1.2].min
+      [max_dials, (ready_agents - current_dials) * ratio].min
+    end
+
+    def timer_tick
+      EM.defer do
+        begin
+          if dial
+            @interval = 0.05
+          else
+            @interval = [10, @interval * 1.2].min
+          end
+        rescue Exception => ex
+          TinyDialer::Log.error ex
+        ensure
+          EM.add_timer(@interval, method(:timer_tick))
         end
-      rescue Exception => ex
-        TinyDialer::Log.error ex
-      ensure
-        EM.add_timer(@interval, method(:timer_tick))
       end
     end
-  end
 
-  def dial
-    needed = self.need_dials
-    ratio = self.dial_ratio
-    aim = needed * ratio
+    def dial
+      aim = dial_aim
 
-    if aim < 1
-      old = @interval
-      @interval = [7, @interval * 1.2].min
+      if aim < 1
+        old = @interval
+        @interval = [7, @interval * 1.2].min
 
-      if old == @interval
-        return false
+        if old == @interval
+          return false
+        else
+          TinyDialer::Log.info "No more leads to load the hopper today"
+          return false
+        end
       else
-        TinyDialer::Log.info "No more leads to load the hopper today, set interval to %.2f" % [@interval]
-        return false
+        @dialer.dial
       end
-    else
-      TinyDialer::Log.info "Try to dial, needed: %d, ratio: %.3f, aim: %.2f" % [needed, ratio, aim]
-      @dialer.dial
-      return true
     end
   end
 end
 
-::EM.run do
-  opts = {}
-  opts[:proxy_server] = ENV["TD_PROXY_SERVER"]
 
-  FSR.load_all_commands
-  TinyDialer::DialManager.new(opts)
+options = TinyDialer.options.dialer
+
+::EM.run do
+  TinyDialer::DialManager.new(
+    proxy_server: options.proxy_server,
+    max_dials: options.max_dials
+  )
 end

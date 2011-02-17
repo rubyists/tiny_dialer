@@ -2,25 +2,27 @@
 
 <table class="status">
   <tr>
-    <th>Dialer Status</th><th>Dialer Pool</th><th>IVR Listener</th>
+    <th>Current Dials</th>
+    <th>Ready Agents</th>
+    <th>Aim</th>
+    <th>Dialer Status</th>
+    <th>IVR Listener</th>
   </tr>
   <tr>
-    <td>#@status</td>
-    <td id="status_dialer_pool">#@dialer_pool</td>
-    <td>#@ivr_status</td>
+    <td id="show_current_dials"></td>
+    <td id="show_ready_agents"></td>
+    <td id="show_aim"></td>
+    <td id="show_dialer_status"></td>
+    <td id="show_ivr_status"></td>
   </tr>
 </table>
 
 <div class="dialer_control">
-  <h3>Dialer Controls</h3>
-
-  <form method="POST" action="#{r(:set_dialer_max)}" class="slider">
-    <label for="dialer_pool">Dialer Pool:</label>
-    <input type="text" name="dialer_pool" id="dialer_pool" size="2" value="#{h @dialer_pool}"/>
-    <div id="dialer_pool_slider"></div>
-
-    <label for="dialer_ratio">Dialer Ratio:</label>
-    <input type="text" name="dialer_ratio" id="dialer_ratio" size="4" value="#{h @dialer_ratio}" />
+  <form class="slider">
+    <div id="dialer_ratio_control">
+      <label for="dialer_ratio">Dialer Ratio:</label>
+      <input type="text" name="dialer_ratio" id="dialer_ratio" size="4" value="#{h @dialer_ratio}" />
+    </div>
     <div id="dialer_ratio_slider"></div>
   </form>
 </div>
