@@ -2,7 +2,7 @@
   var dirtyRatio, p, showStats, slideRatio, syncRatio;
   p = function() {
     var _ref;
-    return (_ref = window.console) != null ? typeof _ref.debug === "function" ? _ref.debug(arguments) : void 0 : void 0;
+    return (_ref = window.console) != null ? typeof _ref.debug == "function" ? _ref.debug(arguments) : void 0 : void 0;
   };
   dirtyRatio = false;
   showStats = function() {
@@ -16,7 +16,7 @@
       if (dirtyRatio === false) {
         $("#dialer_ratio").val(data.ratio);
       }
-      return void 0;
+      return;
     });
   };
   syncRatio = function() {
@@ -33,7 +33,7 @@
   slideRatio = function(event, ui) {
     dirtyRatio = parseFloat(ui.value, 10);
     $('#dialer_ratio').val(dirtyRatio);
-    return void 0;
+    return;
   };
   $(function() {
     if (location.pathname === "/") {

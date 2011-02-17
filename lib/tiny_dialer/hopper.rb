@@ -63,6 +63,13 @@ module TinyDialer
         # Set all the rest of the leads marked HOPPER back to NEW
         ignored_leads.each{|lead| lead.update(:status => "NEW") }
 
+        if callable_leads.size < max_size                                       
+          callable_leads +=  TinyDialer::Lead.filter(:status => 'NEW').         
+            order(:random.sql_function).                                        
+            limit(max_size - callable_leads.size).all                           
+          callable_leads.select!{|lead| lead.call? }
+        end                                                                     
+
         callable_leads.map! do |lead|
           # update lead status to hopper so it's not pulled again
           lead.update(:status => 'HOPPER')
