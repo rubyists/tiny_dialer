@@ -40,9 +40,9 @@ module TinyDialer
                                 #:endpoint => "callcenter sales",
                                 :endpoint => FSR::App::Transfer.new('direct_transfer XML default'),
                                 :target_options => {:lead_id => lead.id}).run }
-        Log.info "Calling #{lead.debtor_id}: #{lead.first_name} #{lead.last_name} at #{lead.phone}."
+        Log.info "Calling #{lead.reference_number}: #{lead.first_name} #{lead.last_name} at #{lead.phone}."
       else
-        Log.info "Not Calling #{lead.debtor_id}: #{lead.first_name} #{lead.last_name}."
+        Log.info "Not Calling #{lead.reference_number}: #{lead.first_name} #{lead.last_name}."
       end
     end
 
