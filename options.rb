@@ -20,6 +20,7 @@ module TinyDialer
         :proxy_server, ENV['TD_Proxy_Server']
       o "Maximum amount of Dials at the same time",
         :max_dials, ENV['TD_Max_Dials'].to_i
+      o "Predictive? (true or leave blank for non-predictive)", :predictive, ENV["TD_Predictive"] || false
     end
   end
 end
