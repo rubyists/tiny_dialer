@@ -21,6 +21,12 @@ module TinyDialer
       o "Maximum amount of Dials at the same time",
         :max_dials, ENV['TD_Max_Dials'].to_i
       o "Predictive? (true or leave blank for non-predictive)", :predictive, ENV["TD_Predictive"] || false
+      o "Freeswitch Server IP For Dialing",
+        :fs_server_ip, ENV['TD_FS_SERVER_IP'] || '127.0.0.1'
+      o "Freeswitch Server Port For Dialing",
+        :fs_server_port, (ENV['TD_FS_SERVER_PORT'] || 8021).to_i
+      o "Freeswitch Server Password",
+        :fs_auth, ENV['TD_FS_SERVER_AUTH'] || 'ClueCon'
     end
   end
 end

@@ -36,7 +36,7 @@ module TinyDialer
     end
 
     def current_dials
-      @dialer.es.channels.run.select{|ch| ch.dest != "19999" }.size
+      @dialer.es{|e| e.channels.run.select{|ch| ch.dest != "19999" }.size }
     end
 
     def ready_agents

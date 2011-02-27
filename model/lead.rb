@@ -35,11 +35,10 @@ class TinyDialer::Lead < Sequel::Model
   # Resorted to using postgres for the time comparison, because it Just Works
   def call?
     if rejection_reason
-      p 'Rejected'
-      warn rejection_reason
+      TinyDialer::Log.info "Rejected #{phone}: #{rejection_reason}"
       return
     end
-    # Make sure (now, now) overlaps (start, stop) 
+    # Make sure (now, now) overlaps (start, stop)
     now = (Time.now.utc + (3600*(timezone)).to_i).strftime('%H:%M')
     TinyDialer.db.fetch("select ('#{now}'::text::time, '#{now}'::text::time) OVERLAPS ('#{state.start}'::text::time, '#{state.stop}'::text::time)").first[:overlaps]
   rescue => e
