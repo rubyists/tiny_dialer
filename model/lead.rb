@@ -17,6 +17,7 @@ class TinyDialer::Lead < Sequel::Model
 
   def postal
     @zip ||= TinyDialer::Zip[:zip => zip[0..4]] if zip
+    @zip
   end
 
   def state
@@ -40,7 +41,11 @@ class TinyDialer::Lead < Sequel::Model
     end
     # Make sure (now, now) overlaps (start, stop)
     now = (Time.now.utc + (3600*(timezone)).to_i).strftime('%H:%M')
-    TinyDialer.db.fetch("select ('#{now}'::text::time, '#{now}'::text::time) OVERLAPS ('#{state.start}'::text::time, '#{state.stop}'::text::time)").first[:overlaps]
+    unless TinyDialer.db.fetch("select ('#{now}'::text::time, '#{now}'::text::time) OVERLAPS ('#{state.start}'::text::time, '#{state.stop}'::text::time)").first[:overlaps]
+      TinyDialer::Log.info "Rejected #{phone}: Outside of calling times #{state.start} and #{state.stop}"
+      return false
+    end
+    true
   rescue => e
     TinyDialer::Log.error e
     return
