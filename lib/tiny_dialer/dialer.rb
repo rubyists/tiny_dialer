@@ -36,12 +36,19 @@ module TinyDialer
 
     private
 
+    def caller_id(number)
+      if global = TinyDialer.options.dialer.caller_id
+        return global
+      end
+      number
+    end
+
     def dial_next(lead)
       if lead.call?
         lead.update(:status => 'DIALING', :timestamp => Time.now) # update lead status to dialing
         lead.update(:status => 'DIALING', :timestamp => Time.now) # update lead status to dialing
         queue = lead.queue
-        response = es{|e| e.originate(:target => "{tcc_queue=#{queue}}[origination_caller_id_number=8887961510]#{@proxy_server_fmt % lead.phone_num}",
+        response = es{|e| e.originate(:target => "{tcc_queue=#{queue}}[origination_caller_id_number=#{caller_id(lead.phone_num)}]#{@proxy_server_fmt % lead.phone_num}",
                                 :endpoint => FSR::App::Transfer.new('direct_transfer XML default'),
                                 :target_options => {:lead_id => lead.id}).run }
         Log.info "Calling #{lead.reference_number}: #{lead.first_name} #{lead.last_name} at #{lead.phone}."

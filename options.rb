@@ -18,6 +18,8 @@ module TinyDialer
     o.sub :dialer do
       o "Dial Server.  This server will originate dials", :dial_server,
         ENV['TD_Dial_Server'] || "127.0.0.1"
+      o "Global Caller ID. This appears on outbound calls", :caller_id,
+        ENV['TD_CallerID']
       o "Proxy Server Format String (sofia/internal/%s@proxy.server, loopback/%s/default/XML, etc)",
         :proxy_server_fmt, ENV['TD_Proxy_Server_Format_String']
       o "Maximum amount of Dials at the same time, defaults to 10",
