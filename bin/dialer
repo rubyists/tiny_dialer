@@ -10,7 +10,7 @@ require "fsr"
 require "fsr/command_socket"
 FSR.load_all_commands
 require "tiny_dialer/tcc_helper"
-TinyDialer::Log.level = Log4r::DEBUG
+TinyDialer::Log.level = Log4r.const_get(TinyDialer.options.dialer.log_level)
 module TinyDialer
   class DialManager
     attr_reader :hopper, :host, :pass, :max_dials
