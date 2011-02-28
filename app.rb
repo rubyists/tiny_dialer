@@ -22,7 +22,7 @@ module TinyDialer
   require LIBROOT/:tiny_dialer/:dialer
   require LIBROOT/:tiny_dialer/:hopper
   require LIBROOT/:tiny_dialer/:phone_number
-  require LIBROOT/:tiny_dialer/:tcc_helper
+  require LIBROOT/:tiny_dialer/:tcc_helper if TinyDialer.options.direct_listener.tcc_root
 end
 
 require_relative 'controller/init'

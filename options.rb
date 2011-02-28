@@ -11,15 +11,15 @@ module TinyDialer
         ENV['TD_DIRECT_LISTENER_HOST'] || "127.0.0.1"
       o "Queue Server", :tcc_server,
         ENV['TD_DIRECT_LISTENER_QUEUE_SERVER'] || "127.0.0.1"
-      o "Tiny Call Center Root", :tcc_root,
-        ENV['TCC_ROOT'] || File.expand_path("../tiny_call_center")
+      o "Tiny Call Center Root (You must set this for Predictive Dialing)", :tcc_root,
+        ENV['TCC_ROOT']
     end
 
     o.sub :dialer do
       o "Proxy Server",
         :proxy_server, ENV['TD_Proxy_Server']
-      o "Maximum amount of Dials at the same time",
-        :max_dials, ENV['TD_Max_Dials'].to_i
+      o "Maximum amount of Dials at the same time, defaults to 10",
+        :max_dials, ENV['TD_Max_Dials'].to_i || 10
       o "Predictive? (true or leave blank for non-predictive)", :predictive, ENV["TD_Predictive"] || false
       o "Freeswitch Server IP For Dialing",
         :fs_server_ip, ENV['TD_FS_SERVER_IP'] || '127.0.0.1'

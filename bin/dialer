@@ -40,7 +40,15 @@ module TinyDialer
     end
 
     def ready_agents
-      TCC_Helper.ready_agents.size
+      if TinyDialer.options.direct_listener.tcc_root
+        TCC_Helper.ready_agents.size
+      else
+        if row = TinyDialer.db[:dialer_pool].first
+          row[:dialer_max]
+        else
+          max_dials
+        end
+      end
     end
 
     # how many dials should be made based on current calls and ready agents
