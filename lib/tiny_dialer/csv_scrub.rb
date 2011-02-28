@@ -21,7 +21,7 @@ module TinyDialer
         next if index == 0
         Log.info "Loading record ##{index} #{record}"
         n = NameParse[record[1]]
-        TinyDialer::Lead.create(:debtor_id => record[0], :first_name => n.first, :last_name => n.last, :suffix => n.suffix, :prefix => n.prefix, :phone => record[5], :balance => record[4], :status => 'NEW', :zip => record[7])
+        TinyDialer::Lead.create(:reference_number => record[0], :first_name => n.first, :last_name => n.last, :suffix => n.suffix, :prefix => n.prefix, :phone => record[5], :balance => record[4], :status => 'NEW', :zip => record[7])
       end
       Log.info "DB loaded"
     end
