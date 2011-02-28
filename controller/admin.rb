@@ -54,60 +54,7 @@ module TinyDialer
       }
     end
 
-    def start_dialer
-      dialer_pool = request[:dialer_pool]
-
-      if dialer_pool.empty?
-        flash[:INFO] = "Must input Number of Dialers to run!"
-        redirect_referrer
-      end
-
-      TinyDialer.db[:dialer_pool].update dialer_max: 1, ratio: 1.0
-
-      if sv_u("#{ENV['HOME']}/service/#{ENV['APP_DB']}")
-        flash[:INFO] = "Starting Dialer with #{dialer_pool} workers"
-      else
-        flash[:WARN] = "Failed to start the Dialer with #{dialer_pool} workers"
-      end
-      redirect_referrer
-    end
-
-    def start_ivr
-      if sv_u("#{ENV['HOME']}/service/ivr")
-        flash[:INFO] = "Started The IVR Listener"
-      else
-        flash[:WARN] = "Failed to start the IVR Listener"
-      end
-      redirect_referrer
-    end
-
-    def stop_ivr
-      if sv_d("#{ENV['HOME']}/service/ivr")
-        flash[:INFO] = "Stopped The IVR Listener"
-      else
-        flash[:WARN] = "Failed to stop The IVR Listener"
-      end
-      redirect_referrer
-    end
-
-    def stop_dialer
-      if sv_d("#{ENV['HOME']}/service/#{ENV['APP_DB']}")
-        flash[:INFO] = "Stopped The Dialer"
-      else
-        flash[:WARN] = "Failed to stop the Dialer"
-      end
-      redirect_referrer
-    end
-
     private
-
-    def sv_u(path)
-      system('sv', 'u', path)
-    end
-
-    def sv_d(path)
-      system('sv', 'd', path)
-    end
 
     def dialer_status
       dialer_status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']} 2>/dev/null`.split(':')[0]
