@@ -10,14 +10,16 @@ module TinyDialer
       o "Host", :host,
         ENV['TD_DIRECT_LISTENER_HOST'] || "127.0.0.1"
       o "Queue Server", :tcc_server,
-        ENV['TD_DIRECT_LISTENER_QUEUE_SERVER'] || "127.0.0.1"
+        ENV['TD_TCC_SERVER'] || "127.0.0.1"
       o "Tiny Call Center Root (You must set this for Predictive Dialing)", :tcc_root,
         ENV['TCC_ROOT']
     end
 
     o.sub :dialer do
-      o "Proxy Server",
-        :proxy_server, ENV['TD_Proxy_Server']
+      o "Dial Server.  This server will originate dials", :dial_server,
+        ENV['TD_Dial_Server'] || "127.0.0.1"
+      o "Proxy Server Format String (sofia/internal/%s@proxy.server, loopback/%s/default/XML, etc)",
+        :proxy_server_fmt, ENV['TD_Proxy_Server_Format_String']
       o "Maximum amount of Dials at the same time, defaults to 10",
         :max_dials, ENV['TD_Max_Dials'].to_i || 10
       o "Predictive? (true or leave blank for non-predictive)", :predictive, ENV["TD_Predictive"] || false

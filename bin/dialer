@@ -10,7 +10,7 @@ require "fsr"
 require "fsr/command_socket"
 FSR.load_all_commands
 require "tiny_dialer/tcc_helper"
-
+TinyDialer::Log.level = Log4r::DEBUG
 module TinyDialer
   class DialManager
     attr_reader :hopper, :host, :pass, :max_dials
@@ -18,7 +18,7 @@ module TinyDialer
     def initialize(o = {:dialers => 1, :host => '127.0.0.1', :pass => 'ClueCon'})
       @host         = o[:host] || '127.0.0.1'
       @pass         = o[:pass] || 'ClueCon'
-      @proxy_server = o[:proxy_server] || '127.0.0.1'
+      @proxy_server_fmt = o[:proxy_server_fmt] || 'loopback/%s/default/XML'
       @max_dials    = o[:max_dials] || 20
 
       TinyDialer::Log.info "DialManager initialized with #{max_dials} dialers"
@@ -28,7 +28,7 @@ module TinyDialer
         host: @host,
         pass: @pass,
         hopper: @hopper,
-        proxy_server: @proxy_server
+        proxy_server_fmt: @proxy_server_fmt
       )
 
       @interval = 5
@@ -36,11 +36,13 @@ module TinyDialer
     end
 
     def current_dials
-      @dialer.es{|e| e.channels.run.select{|ch| ch.dest != "19999" }.size }
+      dials = @dialer.es{|e| e.channels.run.select{|ch| ch.dest != "19999" }.size }
+      TinyDialer::Log.debug "we show #{dials} currently dialing"
+      dials
     end
 
     def ready_agents
-      if TinyDialer.options.direct_listener.tcc_root
+      agents = if TinyDialer.options.direct_listener.tcc_root
         TCC_Helper.ready_agents.size
       else
         if row = TinyDialer.db[:dialer_pool].first
@@ -49,6 +51,8 @@ module TinyDialer
           max_dials
         end
       end
+      TinyDialer::Log.debug("Ready Agents: #{agents}")
+      agents
     end
 
     # how many dials should be made based on current calls and ready agents
@@ -64,9 +68,11 @@ module TinyDialer
       EM.defer do
         begin
           if dial
+            TinyDialer::Log.debug "Interval to 0.05"
             @interval = 0.05
           else
             @interval = [10, @interval * 1.2].min
+            TinyDialer::Log.debug "Interval to #{@interval}"
           end
         rescue Exception => ex
           TinyDialer::Log.error ex
@@ -78,6 +84,7 @@ module TinyDialer
 
     def dial
       aim = dial_aim
+      TinyDialer::Log.debug "Aim is #{aim}"
 
       if aim < 1
         old = @interval
@@ -90,6 +97,7 @@ module TinyDialer
           return false
         end
       else
+        TinyDialer::Log.debug "Dialing"
         @dialer.dial
       end
     end
@@ -99,9 +107,13 @@ end
 
 options = TinyDialer.options.dialer
 
+
 ::EM.run do
+  TinyDialer::Log.info "Proxy Server: #{options.proxy_server_fmt}"
+  TinyDialer::Log.info "Max Dials: #{options.max_dials}"
   TinyDialer::DialManager.new(
-    proxy_server: options.proxy_server,
-    max_dials: options.max_dials
+    proxy_server_fmt: options.proxy_server_fmt,
+    max_dials: options.max_dials,
+    host: options.dial_server
   )
 end
