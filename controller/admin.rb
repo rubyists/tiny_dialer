@@ -34,7 +34,11 @@ module TinyDialer
       sock = FSR::CommandSocket.new(:server => @host, :pass => @pass)
       current_dials = sock.channels.run.select{|ch| ch.dest != "19999" }
 
-      ready_agents = TinyDialer::TCC_Helper.ready_agents.map(&:name)
+      ready_agents = if TinyDialer.options.dialer.tcc_root
+                       TinyDialer::TCC_Helper.ready_agents.map(&:name)
+                     else
+                       [0 .. settings[:dialer_max]]
+                     end
 
       max_dials = ENV['TD_Max_Dials'].to_i
 
