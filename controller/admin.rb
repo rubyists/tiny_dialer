@@ -110,11 +110,11 @@ module TinyDialer
     end
 
     def dialer_status
-      dialer_status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']}`.split(':')[0]
+      dialer_status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']} 2>/dev/null`.split(':')[0]
     end
 
     def ivr_status
-      ivr_status = `sv stat #{ENV['HOME']}/service/ivr`.split(':')[0]
+      ivr_status = `sv stat #{ENV['HOME']}/service/ivr 2>/dev/null`.split(':')[0]
     end
   end
 end
