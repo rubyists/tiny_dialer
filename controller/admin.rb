@@ -13,11 +13,12 @@ module TinyDialer
       upload = request[:file]
       filename = [Time.now.xmlschema, upload[:filename]].join('_')
       path = File.join(ROOT, "csv", filename)
+      clear_leads = request[:clear_leads]
 
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'wb+'){|out| out.print(upload[:tempfile].read) }
 
-      CsvScrubber.new(path).scrub_csv
+      CsvScrubber.new(path, clear_leads).scrub_csv
 
       flash[:INFO] = "Loaded #{filename} : #{upload[:tempfile].size} bytes"
       redirect_referrer

@@ -30,6 +30,8 @@
 <div class="cvs_upload">
   <h3>Upload and load new CSV</h3>
   <form method="POST" action="#{r(:upload_csv)}" enctype="multipart/form-data">
+    <label for="clear_leads">Clear Old Leads</label>
+    <input type="checkbox" name="clear_leads" value="1"/><br />
     <label for="csv_file">Upload CSV:</label>
     <input type="file" name="file" id="csv_file" />
     <input type="submit" name="submit" value="Submit" />

@@ -4,11 +4,12 @@ require 'name_parse'
 
 module TinyDialer
   class CsvScrubber
-    attr_reader :path, :db, :records
+    attr_reader :path, :db, :records, :clear_leads
 
-    def initialize(path)
+    def initialize(path, clear_leads)
       @path = path
       @db = TinyDialer.db
+      @clear_leads = clear_leads.to_i || 0
     end
 
     def read_csv
@@ -32,7 +33,9 @@ module TinyDialer
     end
 
     def scrub_csv
-      clear_previous_leads
+      if clear_leads == 1
+      	 clear_previous_leads
+      end
       read_csv
       load_db
     end
