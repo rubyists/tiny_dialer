@@ -1,11 +1,15 @@
 #!/bin/sh -e
-envdir=$PWD/env
-root=$(<env/TD_Root)
+if [ -d $HOME/.td_env ];then
+  envdir=$HOME/.td_env
+else
+  envdir=$PWD/env
+fi
+root=$(<${envdir}/TD_Root)
 echo Starting from $root
-cd $root
 if [ -s $HOME/.rvm/scripts/rvm ]; then
   source $HOME/.rvm/scripts/rvm
   echo "Using RVM $(which rvm)"
   rvm use 1.9.2 2>&1
 fi
+cd $root
 exec chpst -e $envdir ./bin/dialer 2>&1
