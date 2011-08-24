@@ -3,7 +3,7 @@ p = ->
 
 dirtyRatio = false
 
-showStats = ->
+showStats = (callback) ->
   $.get '/stats.json', (data) ->
     p data
 
@@ -13,6 +13,7 @@ showStats = ->
     $('#show_current_dials').text(data.current_dials.length)
     $('#show_aim').text(data.aim)
     $("#dialer_ratio").val(data.ratio) if dirtyRatio == false
+    callback.call() if callback
     undefined
 
 syncRatio = ->
@@ -29,16 +30,18 @@ slideRatio = (event, ui) ->
   
 $ ->
   if location.pathname == "/"
-    $('#dialer_ratio_slider').slider(
-      min: 1.0,
-      max: 10.0,
-      step: 0.1,
-      value: parseInt($('#dialer_ratio').val(), 10),
-      slide: slideRatio,
-    )
+    setInterval(syncRatio,  1000)
+    syncRatio()
 
     setInterval(showStats,  5000)
-    setInterval(syncRatio,  1000)
-    showStats()
+    showStats ->
+      slider_args = {
+        min: 1.0,
+        max: 10.0,
+        step: 0.1,
+        value: parseFloat($('#dialer_ratio').val(), 10),
+        slide: slideRatio,
+      }
+      $('#dialer_ratio_slider').slider(slider_args)
 
   $('.datepicker').datepicker()

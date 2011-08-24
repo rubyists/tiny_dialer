@@ -2,10 +2,10 @@
   var dirtyRatio, p, showStats, slideRatio, syncRatio;
   p = function() {
     var _ref;
-    return (_ref = window.console) != null ? typeof _ref.debug == "function" ? _ref.debug(arguments) : void 0 : void 0;
+    return (_ref = window.console) != null ? typeof _ref.debug === "function" ? _ref.debug(arguments) : void 0 : void 0;
   };
   dirtyRatio = false;
-  showStats = function() {
+  showStats = function(callback) {
     return $.get('/stats.json', function(data) {
       p(data);
       $('#show_ready_agents').text(data.ready_agents.length);
@@ -15,6 +15,9 @@
       $('#show_aim').text(data.aim);
       if (dirtyRatio === false) {
         $("#dialer_ratio").val(data.ratio);
+      }
+      if (callback) {
+        callback.call();
       }
       return;
     });
@@ -37,16 +40,20 @@
   };
   $(function() {
     if (location.pathname === "/") {
-      $('#dialer_ratio_slider').slider({
-        min: 1.0,
-        max: 10.0,
-        step: 0.1,
-        value: parseInt($('#dialer_ratio').val(), 10),
-        slide: slideRatio
-      });
-      setInterval(showStats, 5000);
       setInterval(syncRatio, 1000);
-      showStats();
+      syncRatio();
+      setInterval(showStats, 5000);
+      showStats(function() {
+        var slider_args;
+        slider_args = {
+          min: 1.0,
+          max: 10.0,
+          step: 0.1,
+          value: parseFloat($('#dialer_ratio').val(), 10),
+          slide: slideRatio
+        };
+        return $('#dialer_ratio_slider').slider(slider_args);
+      });
     }
     return $('.datepicker').datepicker();
   });
