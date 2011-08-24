@@ -16,6 +16,8 @@ module TinyDialer
     end
 
     o.sub :dialer do
+      o "Transfer Queue.  Only agents in this queue will be utilized", :transfer_queue,
+        ENV['TD_Transfer_Queue'] || "helpdesk"
       o "Dial Server.  This server will originate dials", :dial_server,
         ENV['TD_Dial_Server'] || "127.0.0.1"
       o "Global Caller ID. This appears on outbound calls", :caller_id,
