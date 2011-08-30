@@ -2,7 +2,8 @@
 # Distributed under the terms of the MIT license.
 # The full text can be found in the LICENSE file included with this software
 #
-require 'rake/gempackagetask'
+
+require 'rubygems/package_task'
 
 desc "make a gemspec"
 task :gemspec => [:manifest, :changelog, :authors] do
@@ -21,7 +22,7 @@ task :uninstall => [:clean] do
   sh %{gem uninstall -x #{GEMSPEC.name}}
 end
 
-Rake::GemPackageTask.new(GEMSPEC) do |p|
+Gem::PackageTask.new(GEMSPEC) do |p|
   p.need_tar = true
   p.need_zip = true
 end
