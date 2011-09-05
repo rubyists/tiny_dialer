@@ -6,10 +6,11 @@ else
 fi
 root=$(<${envdir}/TD_Root)
 echo Starting from $root
+cd $root
 if [ -s $HOME/.rvm/scripts/rvm ]; then
   source $HOME/.rvm/scripts/rvm
   echo "Using RVM $(which rvm)"
   rvm use 1.9.2 2>&1
+  source .rvmrc.td
 fi
-cd $root
 exec chpst -e $envdir ruby lib/tiny_dialer/direct_listener.rb 2>&1
