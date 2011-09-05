@@ -34,7 +34,7 @@ module TinyDialer
       o "Freeswitch Server Password",
         :fs_auth, ENV['TD_FS_SERVER_AUTH'] || 'ClueCon'
       o "Log Level (DEBUG, INFO, WARN, ERROR, CRIT)",
-        :log_level, ENV['TD_LOG_LEVEL'] || 'INFO'
+        :log_level, ENV['TD_LOG_LEVEL'] || 'DEBUG'
     end
   end
 end

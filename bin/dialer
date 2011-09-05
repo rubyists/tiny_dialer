@@ -11,6 +11,7 @@ require "fsr/command_socket"
 FSR.load_all_commands
 require "tiny_dialer/tcc_helper"
 TinyDialer::Log.level = Log4r.const_get(TinyDialer.options.dialer.log_level)
+
 module TinyDialer
   class DialManager
     attr_reader :hopper, :host, :pass, :max_dials
@@ -43,7 +44,7 @@ module TinyDialer
 
     def ready_agents
       agents = if TinyDialer.options.direct_listener.tcc_root
-        TCC_Helper.ready_agents.size
+        TCC_Helper.ready_agents(TinyDialer.options.dialer.transfer_queue).size
       else
         if row = TinyDialer.db[:dialer_pool].first
           row[:dialer_max]

@@ -2,13 +2,16 @@ module TinyDialer
   module TCC_Helper
     def self.ready_agents(queue = nil)
       reg_servers = {}
-      all_agents = agents
+
       if queue
         members = Hash[tier_members(queue).map { |t| [t.agent, t.state] }]
-        our_agents = all_agents.select { |a| members.key?(a.name) }
+        our_agents = agents.select { |a| members.key?(a.name) }
       else
-        our_agents = all_agents
+        our_agents = agents
+        members = Hash[our_agents.map { |t| [t.agent, t.state] }]
       end
+
+      # TinyDialer::Log.info "Our agents: #{our_agents.inspect}"
 
       our_agents.each { |n|
         n.ext = TinyCallCenter::Account.extension(n.name)
@@ -20,10 +23,10 @@ module TinyDialer
         next unless agent.status =~ /Available/ # only select Available
         next unless members[agent.name] =~ /Ready/
         channels = reg_servers[agent.reg_server]
-        channels.select{|channel|
+        channels.any?{|channel|
           next if channel.dest == '19999' # ignore calls with dest
           channel.dest == agent.ext || channel.name =~ /(?:^|\/)(?:sip:)?#{agent.ext}[@-]/
-        }.empty?
+        }
       }
     end
 

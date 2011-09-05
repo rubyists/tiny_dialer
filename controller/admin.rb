@@ -49,6 +49,7 @@ module TinyDialer
       return {
         ratio: ratio,
         aim: aim,
+        queue: queue,
         current_dials: current_dials,
         dialer_status: dialer_status,
         ivr_status: ivr_status,
@@ -59,11 +60,12 @@ module TinyDialer
     private
 
     def dialer_status
-      dialer_status = `sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']} 2>/dev/null`.split(':')[0]
+      Ramaze::Log.info cmd = "sv stat #{ENV['HOME']}/service/#{ENV['APP_DB']} 2>/dev/null"
+      dialer_status = `#{cmd}`.split(':')[0]
     end
 
     def ivr_status
-      ivr_status = `sv stat #{ENV['HOME']}/service/ivr 2>/dev/null`.split(':')[0]
+      ivr_status = `sv stat #{ENV['HOME']}/service/td_direct_listener 2>/dev/null`.split(':')[0]
     end
   end
 end
