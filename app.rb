@@ -1,16 +1,6 @@
 require 'json'
 require 'ramaze'
 
-Ramaze.setup do |g|
-  gem 'bacon', '1.1.0'
-  gem 'eventmachine', '0.12.10'
-  gem 'freeswitcher', '0.6.12', lib: 'fsr'
-  gem 'log4r', '1.1.9'
-  gem 'name_parse', '0.0.5'
-  gem 'pg', '0.10.1'
-  gem 'sequel', '3.19.0'
-end
-
 require_relative 'options'
 require_relative 'lib/tiny_dialer'
 
@@ -36,5 +26,5 @@ Ramaze::Response.options.headers.merge!(
 FSR.load_all_commands
 
 if $0 == __FILE__
-  Ramaze.start port: 7070
+  Ramaze.start port: 7575
 end
