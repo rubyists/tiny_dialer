@@ -25,23 +25,23 @@ module TinyDialer
 
     def play_message
       lead.update(:status => 'ANSWER', :timestamp => Time.now)
-      @record = TinyDialer::Record.create(:timestamp => Time.now, :status => "CALLING", :debtor_id => lead.debtor_id.to_s, :first_name => lead.first_name.to_s, :last_name => lead.last_name.to_s, :phone => lead.phone.to_s, :zip => lead.zip.to_s)
+      @record = TinyDialer::Record.create(:timestamp => Time.now, :status => "CALLING", :reference_number => lead.reference_number.to_s, :first_name => lead.first_name.to_s, :last_name => lead.last_name.to_s, :phone => lead.phone.to_s, :zip => lead.zip.to_s)
       playback(WELCOME_WAV) do
         update_session do
-          Log.info "#{Time.now} - #{session.headers[:variable_amd_status].to_s} answered (#{session.headers[:variable_amd_result]}) - #{lead.first_name} #{lead.last_name} #{lead.debtor_id}"
+          Log.info "#{Time.now} - #{session.headers[:variable_amd_status].to_s} answered (#{session.headers[:variable_amd_result]}) - #{lead.first_name} #{lead.last_name} #{lead.reference_number}"
           if session.headers[:variable_amd_status].to_s != "machine"
             @record.update(:status => "ANSWERED")
-            Log.info "A person answered, playing initial first/last name question: #{lead.first_name} #{lead.last_name} #{lead.debtor_id}"
+            Log.info "A person answered, playing initial first/last name question: #{lead.first_name} #{lead.last_name} #{lead.reference_number}"
             speak("#{lead.first_name.to_s} #{lead.last_name.to_s}", {:voice => 'diane', :engine => 'cepstral'}) do
-              Log.info "getting input: #{lead.first_name} #{lead.last_name} #{lead.debtor_id}"
+              Log.info "getting input: #{lead.first_name} #{lead.last_name} #{lead.reference_number}"
               get_input
             end
           else
             @record.update(:status => "MACHINE_ANSWERED")
             set("first_name", "#{lead.first_name}") do
               set("last_name", "#{lead.last_name}") do
-                set("debtor_id", "#{lead.debtor_id.to_s.split(%r{\s*}).join(' ')}") do
-                  Log.info "#{Time.now} - Leaving a message for #{lead.first_name} #{lead.last_name} #{lead.debtor_id}"
+                set("reference_number", "#{lead.reference_number.to_s.split(%r{\s*}).join(' ')}") do
+                  Log.info "#{Time.now} - Leaving a message for #{lead.first_name} #{lead.last_name} #{lead.reference_number}"
                   lead.update(:status => 'ANS_MACH_LMTC', :timestamp => Time.now)
                   @record.update(:status => 'ANS_MACH_LMTC')
                   lead.write_status
@@ -96,12 +96,12 @@ module TinyDialer
     end
 
     def direct_xfer
-      Log.info "#{Time.now} - ##{lead.debtor_id} #{lead.first_name} #{lead.last_name} transfered to queue"
+      Log.info "#{Time.now} - ##{lead.reference_number} #{lead.first_name} #{lead.last_name} transfered to queue"
       timestamp = Time.now
       lead.update(:status => 'DIRECT_XFER', :timestamp => timestamp)
       @record.update(:status => 'DIRECT_XFER')
       lead.write_status
-      set("effective_caller_id_number", "Acct#{lead.debtor_id}") do
+      set("effective_caller_id_number", "Acct#{lead.reference_number}") do
         set("effective_caller_id_name", "#{@lead.first_name} #{@lead.last_name}") do
           transfer("9999 XML default") { close_connection }
         end
@@ -116,7 +116,7 @@ module TinyDialer
       lead.write_status
       set("first_name", "#{lead.first_name}") do
         set("last_name", "#{lead.last_name}") do
-          set("debtor_id", "#{lead.debtor_id.to_s.split(%r{\s*}).join(' ')}") do
+          set("reference_number", "#{lead.reference_number.to_s.split(%r{\s*}).join(' ')}") do
             lead.write_status
             transfer("7001 XML default") { close_connection }
           end

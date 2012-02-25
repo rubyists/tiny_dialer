@@ -4,7 +4,7 @@
 
 <table>
   <tr>
-    <th>Debtor</th>
+    <th>Reference</th>
     <th>First</th>
     <th>Last</th>
     <th>Timestamp</th>
@@ -13,9 +13,9 @@
   </tr>
   <?r @records_paginated.each do |record| ?>
     <tr>
-      <td>#{record.debtor_id.to_s}</td>
-      <td>#{record.first_name.to_s}</td>
-      <td>#{record.last_name.to_s}</td>
+      <td>#{record.reference_number}</td>
+      <td>#{record.first_name}</td>
+      <td>#{record.last_name}</td>
       <td>#{record.timestamp.strftime("%m/%d/%Y %H:%M")}</td>
       <td>#{record.phone}</td>
       <td>#{record.status}</td>

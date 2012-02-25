@@ -3,16 +3,19 @@ require 'csv'
 
 class TinyDialer::Lead < Sequel::Model
   set_dataset :leads
-  attr_reader :rej
 
   def phone_num
     phone.gsub('-', '') # Return phone number without hyphens, i.e. "-"
   end
 
   def write_status
-    File.open(File.join(TinyDialer::ROOT, "results", "#{self.debtor_id}.tsv"), 'wb', 0664) do |f|
-      f.puts "#{self.debtor_id}\t#{self.status}\t#{self.phone}\t#{self.timestamp.year}-#{self.timestamp.month}-#{self.timestamp.day}\t#{self.timestamp.hour}:#{self.timestamp.min}\tBD_IC"
+    File.open write_status_path, 'wb+', 0664 do |f|
+      f.puts [reference_number, status, phone, timestamp.strftime("%Y-%m-%d\t%H:%M"), 'BD_IC'].join("\t")
     end
+  end
+
+  def write_status_path
+    "#{TinyDialer::ROOT}/results/#{reference_number}.tsv"
   end
 
   def postal
@@ -35,48 +38,47 @@ class TinyDialer::Lead < Sequel::Model
   #
   # Resorted to using postgres for the time comparison, because it Just Works
   def call?
-    if rejection_reason
-      TinyDialer::Log.info "Rejected #{phone}: #{rejection_reason}"
-      return
+    if reason = rejection_reason
+      TinyDialer::Log.info "Rejected #{phone}: #{reason}"
+      return false
     end
+
     # Make sure (now, now) overlaps (start, stop)
     now = (Time.now.utc + (3600*(timezone)).to_i).strftime('%H:%M')
-    unless TinyDialer.db.fetch("select ('#{now}'::text::time, '#{now}'::text::time) OVERLAPS ('#{state.start}'::text::time, '#{state.stop}'::text::time)").first[:overlaps]
+    if TinyDialer.db.fetch("select ('#{now}'::text::time, '#{now}'::text::time) OVERLAPS ('#{state.start}'::text::time, '#{state.stop}'::text::time)").first[:overlaps]
+      return true
+    else
       TinyDialer::Log.info "Rejected #{phone}: Outside of calling times #{state.start} and #{state.stop}"
       return false
     end
-    true
   rescue => e
     TinyDialer::Log.error e
-    return
+    false
   end
 
   def dnc?
-    TinyDialer::Dnc[:number => self.phone_num]
+    TinyDialer::Dnc[number: phone_num]
   end
 
   def called_today?
-    return unless timestamp
-    begin
-      Time.now.to_date == timestamp.to_date
-    rescue => e
-      TinyDialer::Log.error e
-      return
-    end
+    timestamp && Date.today == timestamp.to_date
+  rescue => e
+    TinyDialer::Log.error e
+    false
   end
 
   private
+
   def rejection_reason
-    return @rej = :no_zip unless zip
-    return @rej = :no_state unless state
-    #return @rej = :called_today if called_today?
-    return @rej = :do_not_call if dnc?
-    @rej = false
+    return :no_zip unless zip
+    return :no_state unless state
+    return :called_today if called_today?
+    return :do_not_call if dnc?
+    false
   end
 
   def before_create
     self[:created_at] = DateTime.now
     self[:status] ||= "NEW"
   end
-
 end

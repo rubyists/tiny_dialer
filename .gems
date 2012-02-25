@@ -11,6 +11,7 @@ name_parse -v0.0.5
 nokogiri -v1.5.0
 pg -v0.12.2
 rack -v1.4.1
+rack-test -v0.6.1
 rake -v0.9.2.2
 ramaze -v2011.12.28
 sequel -v3.31.0

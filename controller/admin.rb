@@ -18,7 +18,8 @@ module TinyDialer
       FileUtils.mkdir_p(File.dirname(path))
       File.open(path, 'wb+'){|out| out.print(upload[:tempfile].read) }
 
-      CsvScrubber.new(path, clear_leads).scrub_csv
+      TinyDialer::Lead.destroy if request[:clear_leads]
+      LeadScrubber.import_leads(path)
 
       flash[:INFO] = "Loaded #{filename} : #{upload[:tempfile].size} bytes"
       redirect_referrer

@@ -3,9 +3,9 @@ require_relative '../db_helper'
 describe 'TinyDialer::Lead' do
 
   before do
-    @u = TinyDialer::Lead.create(:first_name => "jayson", :last_name => "vaughn", 
-                            :phone => "817-690-7937", :status => "NEW", 
-                            :debtor_id => '1234567', :zip => '75202')
+    @u = TinyDialer::Lead.create(:first_name => "jayson", :last_name => "vaughn",
+                            :phone => "817-690-7937", :status => "NEW",
+                            :reference_number => '1234567', :zip => '75202')
     @tz = TinyDialer::Zip.create(:zip => '75202', :gmt => '-6.0', :state => 'TX')
     @state = TinyDialer::State.create(:state => 'TX', :start => "09:00", :stop => "21:00")
   end
@@ -18,21 +18,19 @@ describe 'TinyDialer::Lead' do
 
   it 'should allow creation of a lead' do
     @u.id.should.not == nil
-    @u.debtor_id.should == "1234567"
+    @u.reference_number.should == "1234567"
     @u.phone.should == "817-690-7937"
     @u.first_name.should == "jayson"
   end
 
   it 'should write lead status to a file in /tmp' do
-    @u.update(:status => 'LTMC', :timestamp => Time.now)
+    @u.update(:status => 'LTMC', :timestamp => Time.at(1330205728))
     @u.write_status
-    status_file = File.join(TinyDialer::ROOT, "results", "#{@u.debtor_id}.tsv")
-    File.exists?(status_file).should == true
-    file = File.open(status_file).each do |record|
-      entry = record.strip.split("\t")
-      entry[0].should == "1234567"
-      entry[1].should == "LTMC"
-      entry[2].should == "817-690-7937"
+
+    File.open @u.write_status_path do |file|
+      file.each_line do |record|
+        record.scan(/[^\t]+/).first(3).should == %w[1234567 LTMC 817-690-7937]
+      end
     end
   end
 
@@ -61,11 +59,11 @@ describe 'TinyDialer::Lead' do
   end
 
   it 'should not allow a call to be placed twice in the same day' do
-    @state.update(:start => '00:00', :stop => '23:59') # So the first spec will always pass
-    @u.update(:timestamp => Time.now - 36000)
-    @u.call?.should == true
-    @u.update(:timestamp => Time.now, :status => 'ANSWERED')
-    @u.call?.should != true
+    @state.update(start: '00:00', stop: '23:59') # So the first spec will always pass
+    @u.update(status: 'NEW', timestamp: Date.today - 1)
+    @u.timestamp.to_date.should.not == Date.today
+    @u.should.be.call
+    @u.update(status: 'ANSWERED', timestamp: Time.now)
+    @u.should.not.be.call
   end
-
 end
