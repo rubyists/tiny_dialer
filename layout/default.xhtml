@@ -4,42 +4,36 @@
     <meta charset="utf-8" />
     <title>#@title</title>
     <meta name="generator" content="Ramaze #{Ramaze::VERSION}" />
-
-    <link type="text/css" href="/css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
-    <link type="text/css" href="/css/site.css" rel="stylesheet" />
-    <script type="text/javascript" src="/js/jquery-1.6.2.js"></script>
-    <script type="text/javascript" src="/js/jquery-ui-1.8.16.custom.js"></script>
-    <script type="text/javascript" src="/js/site.js"></script>
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet" />
+    <link type="text/css" href="/css/bootstrap-responsive.css" rel="stylesheet" />
+    <link type="text/css" href="/css/ui-darkness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />
+		<script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/js/jquery-ui-1.8.18.custom.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.js"></script>
   </head>
   <body>
-    <header>
-      <h1>#@title</h1>
-      <nav>
-        <ul>
-          <li>
-            #{TinyDialer::AdminController.a 'Admin', :/}
-          </li>
-          <li>
-            #{TinyDialer::StatesController.a 'States', :/}
-          </li>
-          <li>
-            #{TinyDialer::RecordsController.a 'Records', :/}
-          </li>
-        </ul>
-      </nav>
-      <div class="flash-error">#{flash[:ERROR] if flash[:ERROR]}</div>
-      <div class="flash-warning">#{flash[:WARN] if flash[:WARN]}</div>
-      <div class="flash-info">#{flash[:INFO] if flash[:INFO]}</div>
+    <header class="navbar">
+      <div class="navbar-inner">
+        <a class="brand" href="#">#@title</a>
+        <div class="container">
+          <ul class="nav">
+            <li>#{TinyDialer::AdminController.a 'Admin', :/}</li>
+            <li>#{TinyDialer::StatesController.a 'States', :/}</li>
+            <li>#{TinyDialer::RecordsController.a 'Records', :/}</li>
+          </ul>
+        </div>
+      </div>
     </header>
-    <div id="content">
+    <div class="container">
       #@content
     </div>
-    <footer>
-      Copyright (c) 2009-2011 The Rubyists, LLC<br />
-      Powered by
-      <a href="http://lighttpd.net">Lighttpd</a>
-      <a href="http://ramaze.net">Ramaze</a>
-      <a href="http://www.postgresql.org">PostgreSQL</a>
-    </footer>
+    <div class="container">
+      <div class="row">
+        <div class="flash-error">#{flash[:ERROR] if flash[:ERROR]}</div>
+        <div class="flash-warning">#{flash[:WARN] if flash[:WARN]}</div>
+        <div class="flash-info">#{flash[:INFO] if flash[:INFO]}</div>
+        <div id="copyright" class="span12">Effortless Dialer &copy; by The Rubyists LLC. 2009-2012</div>
+      </div>
+    </div>
   </body>
 </html>

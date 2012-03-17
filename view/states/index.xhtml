@@ -1,8 +1,8 @@
-<h3>State Call Times</h3>
 <form action="#{r(:edit)}" method="post">
   <fieldset>
     <legend>Choose State to edit</legend>
 
+    <label>State</label>
     <select name="state_id">
       <?r @states.each do |state| ?>
         <option value=#{state.id}>#{state.state}</option>

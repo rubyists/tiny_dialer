@@ -1,41 +1,50 @@
-<h3>Current Status</h3>
+<h1>Current Status</h1>
 
-<table class="status">
-  <tr>
-    <th>Current Dials</th>
-    <th>Ready Agents</th>
-    <th>Aim</th>
-    <th>Dialer Status</th>
-    <th>IVR Listener</th>
-    <th>Transfer Queue</th>
-  </tr>
-  <tr>
-    <td id="show_current_dials"></td>
-    <td id="show_ready_agents"></td>
-    <td id="show_aim"></td>
-    <td id="show_dialer_status"></td>
-    <td id="show_ivr_status"></td>
-    <td id="show_queue"></td>
-  </tr>
+<table class="status table-bordered">
+  <thead>
+    <tr>
+      <th>Current Dials</th>
+      <th>Ready Agents</th>
+      <th>Aim</th>
+      <th>Dialer Status</th>
+      <th>IVR Listener</th>
+      <th>Transfer Queue</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td id="show_current_dials"></td>
+      <td id="show_ready_agents"></td>
+      <td id="show_aim"></td>
+      <td id="show_dialer_status"></td>
+      <td id="show_ivr_status"></td>
+      <td id="show_queue"></td>
+    </tr>
+  </tbody>
 </table>
 
 <div class="dialer_control">
   <form class="slider">
-    <div id="dialer_ratio_control">
+    <fieldset>
+      <legend>Adjust Ratio</legend>
       <label for="dialer_ratio">Dialer Ratio:</label>
-      <input type="text" name="dialer_ratio" id="dialer_ratio" size="4" value="#{h @dialer_ratio}" />
-    </div>
-    <div id="dialer_ratio_slider"></div>
+      <input type="range" min="1.0" max="10.0" step="0.1" name="dialer_ratio" id="dialer_ratio" value="#{h @dialer_ratio}">
+    </fieldset>
   </form>
 </div>
 
 <div class="cvs_upload">
-  <h3>Upload and load new CSV</h3>
   <form method="POST" action="#{r(:upload_csv)}" enctype="multipart/form-data">
-    <label for="clear_leads">Clear Old Leads</label>
-    <input type="checkbox" name="clear_leads" value="1"/><br />
-    <label for="csv_file">Upload CSV:</label>
-    <input type="file" name="file" id="csv_file" />
-    <input type="submit" name="submit" value="Submit" />
+    <fieldset>
+      <legend>Upload and load new CSV</legend>
+      <label class="checkbox" for="clear_leads">
+        <input type="checkbox" name="clear_leads"> Clear Old Leads
+      </label>
+
+      <label for="csv_file">Upload CSV</label>
+      <input type="file" name="file" id="csv_file" />
+
+      <input type="submit" name="submit" value="Submit" />
+    </fieldset>
   </form>
 </div>
