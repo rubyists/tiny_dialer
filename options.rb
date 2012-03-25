@@ -13,7 +13,7 @@ module TinyDialer
 
   options.dsl do |o|
     o "PG for TinyDialer.db", :db,
-      pgpass.(database: 'dialer')
+      pgpass.(database: ENV['TD_DB'] || 'dialer')
 
     o.sub :direct_listener do
       o "Port", :port,
