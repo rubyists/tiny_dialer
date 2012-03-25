@@ -1,3 +1,5 @@
 sv/*
 csv/20*
 log/*.log
+*.swp
+.pgpass

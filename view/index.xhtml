@@ -1,50 +1,63 @@
-<h1>Current Status</h1>
+<div class="row">
+  <table class="span6 status table table-bordered">
+    <thead><tr>
+        <th>Current Dials</th>
+        <th>Ready Agents</th>
+        <th>Aim</th>
+        <th>Dialer Status</th>
+        <th>IVR Listener</th>
+        <th>Transfer Queue</th>
+    </tr></thead>
+    <tbody><tr>
+        <td id="show_current_dials"></td>
+        <td id="show_ready_agents"></td>
+        <td id="show_aim"></td>
+        <td id="show_dialer_status"></td>
+        <td id="show_ivr_status"></td>
+        <td id="show_queue"></td>
+    </tr></tbody>
+  </table>
 
-<table class="status table-bordered">
-  <thead>
-    <tr>
-      <th>Current Dials</th>
-      <th>Ready Agents</th>
-      <th>Aim</th>
-      <th>Dialer Status</th>
-      <th>IVR Listener</th>
-      <th>Transfer Queue</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td id="show_current_dials"></td>
-      <td id="show_ready_agents"></td>
-      <td id="show_aim"></td>
-      <td id="show_dialer_status"></td>
-      <td id="show_ivr_status"></td>
-      <td id="show_queue"></td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="dialer_control">
-  <form class="slider">
-    <fieldset>
-      <legend>Adjust Ratio</legend>
+  <div class="span6">
+    <form>
       <label for="dialer_ratio">Dialer Ratio:</label>
-      <input type="range" min="1.0" max="10.0" step="0.1" name="dialer_ratio" id="dialer_ratio" value="#{h @dialer_ratio}">
-    </fieldset>
-  </form>
+      <input class="span6" type="range" min="1.0" max="10.0" step="0.1" name="dialer_ratio" id="dialer_ratio" value="#{h @dialer_ratio}">
+      <div id="dialer_ratio_slider"></div>
+    </form>
+  </div>
 </div>
-
-<div class="cvs_upload">
-  <form method="POST" action="#{r(:upload_csv)}" enctype="multipart/form-data">
+<div class="row">
+  <form class="span6" method="post" action="#{r(:upload_csv)}" enctype="multipart/form-data">
     <fieldset>
-      <legend>Upload and load new CSV</legend>
-      <label class="checkbox" for="clear_leads">
-        <input type="checkbox" name="clear_leads"> Clear Old Leads
-      </label>
+      <legend>Upload leads from CSV</legend>
 
-      <label for="csv_file">Upload CSV</label>
+      <label for="csv_file">CSV:</label>
       <input type="file" name="file" id="csv_file" />
+
+      <label class="checkbox" for="clear_leads">
+        <input type="checkbox" id="clear_leads" name="clear_leads"> Clear Old Leads
+      </label>
 
       <input type="submit" name="submit" value="Submit" />
     </fieldset>
   </form>
+
+  <form class="span6" action="#{TinyDialer::RecordsController.r(:search)}">
+    <fieldset>
+      <legend>Search Records</legend>
+
+      <label for="date_start">Start Date</label>
+      <input type="date" name="date_start" id="date_start">
+
+      <label for="date_end">End Date</label>
+      <input type="date" name="date_end" id="date_end">
+
+      <label for="phone">Phone Number</label>
+      <input type="phone" name="phone" id="phone">
+
+      <input type="submit" value="Search">
+    </fieldset>
+  </form>
 </div>
+
+<script type="text/javascript" src="/js/site.js"></script>

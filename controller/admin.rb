@@ -30,18 +30,27 @@ module TinyDialer
     end
 
     def stats
+      options = TinyDialer.options.dialer
+
       settings = TinyDialer.db[:dialer_pool].order(:id).last
-      queue = TinyDialer.options.dialer.transfer_queue
+      queue = options.transfer_queue
       ratio = settings[:ratio]
 
-      sock = FSR::CommandSocket.new(:server => @host, :pass => @pass)
+      Ramaze::Log.info cs = {
+        server: options.fs_server_ip,
+        port: options.fs_server_port,
+        pass: options.fs_auth,
+      }
+
+      sock = FSR::CommandSocket.new(cs)
       current_dials = sock.channels.run.select{|ch| ch.dest != "19999" }
 
-      ready_agents = if TinyDialer.options.direct_listener.tcc_root
-                       TinyDialer::TCC_Helper.ready_agents(queue).map(&:name)
-                     else
-                       (0..settings[:dialer_max]).to_a
-                     end
+      ready_agents =
+        if TinyDialer.options.direct_listener.tcc_root
+          TinyDialer::TCC_Helper.ready_agents(queue).map(&:name)
+        else
+          (0..settings[:dialer_max]).to_a
+        end
 
       max_dials = ENV['TD_Max_Dials'].to_i
 

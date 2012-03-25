@@ -4,11 +4,13 @@
     <meta charset="utf-8" />
     <title>#@title</title>
     <meta name="generator" content="Ramaze #{Ramaze::VERSION}" />
-    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet" />
-    <link type="text/css" href="/css/bootstrap-responsive.css" rel="stylesheet" />
+
     <link type="text/css" href="/css/ui-darkness/jquery-ui-1.8.18.custom.css" rel="stylesheet" />
 		<script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript" src="/js/jquery-ui-1.8.18.custom.min.js"></script>
+
+    <link type="text/css" href="/css/bootstrap.css" rel="stylesheet" />
+    <link type="text/css" href="/css/bootstrap-responsive.css" rel="stylesheet" />
     <script type="text/javascript" src="/js/bootstrap.js"></script>
   </head>
   <body>
@@ -17,7 +19,7 @@
         <a class="brand" href="#">#@title</a>
         <div class="container">
           <ul class="nav">
-            <li>#{TinyDialer::AdminController.a 'Admin', :/}</li>
+            <li>#{TinyDialer::AdminController.a 'Control', :/}</li>
             <li>#{TinyDialer::StatesController.a 'States', :/}</li>
             <li>#{TinyDialer::RecordsController.a 'Records', :/}</li>
           </ul>

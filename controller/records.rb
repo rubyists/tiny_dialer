@@ -4,25 +4,26 @@ module TinyDialer
     helper :paginate
 
     def search
-      if request["date_start"].empty? or request["date_end"].empty?
-        flash[:ERROR] = "Must put in a date range to search"
+      request.to_ivs(:date_start, :date_end, :phone)
+
+      if @date_start && @date_end
+        date_start, date_end = "#{@date_start} 00:00", "#{@date_end} 23:59"
+      else
+        flash[:records_search_error] = "Must put in a date range to search"
         redirect_referrer
       end
 
-      date_start = request["date_start"] + " 00:00"
-      date_end = request["date_end"] + " 23:59"
-      phone_no = TinyDialerAdmin::PhoneNumber::parse(request["phone"]).to_s.strip unless request["phone"].empty? or request["phone"].nil?
-
+      phone_no = TinyDialerAdmin::PhoneNumber::parse(@phone).to_s.strip if @phone
       time_range = 'timestamp >= ? and timestamp <= ?'
 
       if phone_no
-        @records= TinyDialer::Record.filter("phone = ? and (#{time_range})", phone_no, date_start, date_end).to_a
+        @records= Record.filter("phone = ? and (#{time_range})", phone_no, date_start, date_end).to_a
       else
-        @records = TinyDialer::Record.filter("(#{time_range})", date_start, date_end).to_a
+        @records = Record.filter("(#{time_range})", date_start, date_end).to_a
       end
 
       if @records.empty?
-        flash[:ERROR] = "No records found with #{phone_no}"
+        flash[:records_search_error] = "No records found with #{phone_no}"
         redirect_referrer
       end
 
